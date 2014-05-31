@@ -1,0 +1,584 @@
+/* don't show the x for text inputs */
+::-ms-clear {
+    width : 0;
+    height: 0;
+}
+
+/* don't show the eye for password inputs */
+::-ms-reveal {
+    width : 0;
+    height: 0;
+}
+
+.lt-ie8 .user-content ul li {
+  position: relative;
+  *zoom: expression( 
+          this.runtimeStyle.zoom="1",
+          this.appendChild( document.createElement("small") ).className="before"
+         );
+}
+
+.lt-ie8 .user-content ul li small {
+  display: block;
+  position: absolute;
+  top: 7px;
+  left: 0;
+  width: 4px;
+  height: 4px;
+  background: #5ba193;
+  z-index: 2;
+}
+
+
+/***form***/
+.lt-ie8 .facebook-button a {
+  *zoom: expression( 
+          this.runtimeStyle.zoom="1",
+          this.appendChild( document.createElement("small") ).className="before"
+         );
+}
+.lt-ie8 .facebook-button a small {
+    display: block;
+    position: absolute;
+    left: 1em;
+    top: 0;
+    bottom: 0;
+    width: 24px;
+    background: url(../images/glyphs-facebook.png) no-repeat left center;
+  }
+}
+
+.lt-ie9 input[type="text"], 
+.lt-ie9 input[type="password"] {
+  padding-top: 0.7em;
+}
+.ie8 input[type="text"], 
+.ie8 input[type="password"] {
+  padding-top: 0.7em;
+}
+
+.lt-ie8 input[type="text"], 
+.lt-ie8 input[type="password"] {
+  height: 2.2em;
+}
+
+.lt-ie8 .styledSelect {
+  *zoom: expression( 
+          this.runtimeStyle.zoom="1",
+          this.appendChild( document.createElement("small") ).className="before"
+         );
+}
+.lt-ie8 .styledSelect small {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 2.5em;
+  height: 44px;
+  background: url(../images/select-arrow.png) no-repeat center center;
+  background-size: 19px 10px;
+  border-left: 1px solid #cacaca;
+}
+
+
+.lt-ie9 .settings-field .form-type-checkbox label {
+  z-index: 1;
+  cursor: default;
+}
+.lt-ie9 .settings-field .form-type-checkbox input {
+  cursor: pointer;
+}
+
+
+/***.splash***/
+.lt-ie8 .splash .block-user {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.lt-ie8 .splash .block-user .content {
+  padding-top: 0.7em;
+  padding-bottom: 1em;
+}
+.lt-ie8 .splash input[type="text"], 
+.lt-ie8 .splash input[type="password"] {
+  width: 90%;
+}
+.lt-ie8 .splash .facebook-button a {
+  width: 10em;
+}
+/*.ie8 .splash .facebook-button a {
+  padding-left: 1em;
+}
+.ie8 .splash .facebook-button:before {
+  background: none;
+}*/
+.lt-ie8 .splash .form-submit {
+  padding-left: 0.5em;
+}
+.ie8 .splash .block-user .content .login-field .form-item-name, 
+.ie8 .splash .block-user .content .login-field .form-item-pass  {
+  width: 155px;
+}
+.ie8 .splash .block-user .content .login-field .forgotten-password {
+  left: 22.5em;
+}
+.ie8 .splash .block-user .content .login-field.new-account {
+  left: 50em;
+}
+
+
+.lt-ie8 .splash .form-actions input {
+  width: 7.5em;
+}
+.lt-ie8 .splash .intro-text + .login-field  {
+    float: none;
+    width: 90%;
+    position: absolute;
+    top: 0.7em;
+    right: 11em;
+    width: 20em;
+ }
+.lt-ie8 .splash .block-user .content .login-field .form-item-remember-me,
+.lt-ie8 .splash .block-user .content .login-field.new-account {
+  top: 6em;
+ }
+ .lt-ie8 .splash .block-user .content .login-field .forgotten-password {
+  top: 4em;
+ }
+
+.lt-ie8 .splash section.user-content ul li {
+  width: 43%!important;
+}
+.lt-ie8 .splash .splash-container {
+  position: relative;
+}
+.ie8 .splash header[role="banner"] .logo + p {
+  font-size: 2.7em;
+}
+.ie8 .splash section.user-content {
+  width: 41%;
+}
+.lt-ie8 .splash header[role="banner"] {
+  margin-top: 15em;
+}
+.lt-ie8 .splash .pick-team {
+  position: relative;
+  margin-top: 22em;
+  right: 3%;
+}
+.lt-ie8 .splash .pick-team ul li {
+  width: 24%;
+}
+.lt-ie8 .splash .pick-team ul li a, .lt-ie8 .pick-team-modal .modal-dialog ul li a {
+  position: relative;
+  *zoom: expression( 
+          this.runtimeStyle.zoom="1",
+          this.appendChild( document.createElement("small") ).className="before"
+         );
+}
+.lt-ie8 .splash .pick-team ul li a small, .lt-ie8 .pick-team-modal .modal-dialog ul li small {
+  display: block;
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 33px;
+  height: 26px;
+  background: url(../images/pick-team-arrow.png) no-repeat left center;
+}
+
+
+/***pick-team-modal***/
+.lt-ie9 .pick-team-modal, .lt-ie9 .setting-popup {
+  background: transparent url(../images/dot.png) repeat left top;
+}
+.lt-ie9 .pick-team-modal .modal-dialog, .lt-ie9 .setting-popup  .modal-dialog{
+  margin: 0 auto;
+  max-width: 60em;
+}
+.lt-ie9 .setting-popup  .modal-dialog {
+  margin-top: 10%;
+}
+.lt-ie8 .pick-team-modal .modal-dialog ul li {
+  width: 24.3%;
+}
+
+/***login***/
+.lt-ie8 .logg-inn div[role="main"] input[type="text"], 
+.lt-ie8 .page-user-register div[role="main"] input[type="text"], 
+.lt-ie8 .page-user-password div[role="main"] input[type="text"],
+.lt-ie8 .logg-inn div[role="main"] input[type="password"], 
+.lt-ie8 .page-user-register div[role="main"] input[type="password"], 
+.lt-ie8 .page-user-password div[role="main"]  input[type="password"] {
+  width: 98%;
+}
+
+.lt-ie8 .logg-inn div[role="main"] .form-actions, 
+.lt-ie8 .page-user-register div[role="main"] .form-actions {
+  *zoom: expression( 
+          this.runtimeStyle.zoom="1",
+          this.appendChild( document.createElement("small") ).className="before"
+         );
+}
+.lt-ie8 .logg-inn div[role="main"] .form-actions small, 
+.lt-ie8 .page-user-register div[role="main"] .form-actions small {
+  display: block;
+  position: absolute;
+  left: 1.5em;
+  top: 0;
+  height: 44px;
+  width: 24px;
+  background: url(../images/glyphs-login-white.png) no-repeat left center;
+}
+
+
+/***sub-nav***/
+.lt-ie8 .sub-nav .container-block ul li.first+li {
+  width: 32.5%;
+}
+
+/***nav***/
+.lt-ie9 .navbar-default {
+  margin-right: 1.5em;
+  min-height: 4em;
+  font-size: 9px;
+}
+.lt-ie9 .navbar-default ul.navbar-nav li.last {
+  margin-left: -0.8em;
+}
+.lt-ie8 header[role="banner"].header-logged-in>.container-block {
+  height: 105px;
+}
+.lt-ie8 header[role="banner"].header-logged-in figure,
+.lt-ie8 header[role="banner"].header-logged-in .pull-right {
+  margin-top: -100px;
+}
+.lt-ie8 header[role="banner"].header-logged-in>.container-block {
+  max-width: 1160px;
+}
+
+/***rewards***/
+.lt-ie8 .rewards-wrapper .rewards-filters ul li {
+  width: 24.9%;
+}
+.lt-ie9 .reward.match-content.panel .team-exclusive .team-color {
+    position: absolute;
+    top: 5px;
+    background:none!important;
+} 
+.lt-ie9 .matches-wrapper ul.team-color {
+  display: none!important;
+}
+
+.lt-ie8 .reward.locked.match-content.panel .content-title .media-object,
+.lt-ie8 .reward.locked.match-content.panel .imageWrapper {
+  *zoom: expression( 
+          this.runtimeStyle.zoom="1",
+          this.appendChild( document.createElement("small") ).className="before"
+         );
+}
+.lt-ie8 .reward.locked.match-content.panel .content-title .media-object small,
+.lt-ie8 .reward.locked.match-content.panel .imageWrapper small  {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  display: block;
+}
+
+.lt-ie9 .reward.locked.match-content.panel .content-title .media-object {
+  background: #000;
+}
+.lt-ie9 .reward.locked.match-content.panel .content-title .media-object img {
+  filter: alpha(opacity=40);
+}
+.lt-ie9 .reward.locked.match-content.panel .content-title .media-object:before,
+.lt-ie8 .reward.locked.match-content.panel .content-title .media-object small {
+  background: transparent url(../images/locked-icon-grey.png) no-repeat center center;
+}
+
+.lt-ie9 .reward.locked.match-content.panel .imageWrapper {
+  background: #000;
+}
+.lt-ie9 .reward.locked.match-content.panel .imageWrapper img {
+  filter: alpha(opacity=40);
+}
+.lt-ie9 .reward.locked.match-content.panel .imageWrapper:before,
+.lt-ie8 .reward.locked.match-content.panel .content-title .media-object small,
+.lt-ie8 .reward.locked.match-content.panel .imageWrapper small {
+  background: transparent url(../images/locked-icon-grey-b.png) no-repeat center center;
+}
+
+.lt-ie8 .match-contents .match-content.panel .content-title .media-heading h2 {
+  padding-top: 10px;
+}
+.lt-ie8 .match-contents .match-content.panel .content-title .media-heading hr {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.lt-ie8 .reward.match-content.panel .content-title .media-heading .time-meta-reward-locked {
+  margin-top: -0.5em;
+}
+.lt-ie8 .reward.locked.match-content.panel .required-points-info figure img {
+  margin-top: 20px;
+  margin-left: 20px;
+}
+.lt-ie8 .match-contents .match-content.panel.open a.form-submit {
+  clear: both;
+  width: auto;
+}
+
+
+/***matches***/
+.lt-ie9 .matches-wrapper .match-details ul.team-color {
+  display: none;
+}
+.lt-ie9 .matches-wrapper header>div.match-in-progress h2 {
+  right: auto;
+  left: 50%;
+  margin-left: -6em;
+  max-width: inherit;
+  width: 12em;
+}
+.lt-ie8 .matches-wrapper header>div.match-in-progress h2 {
+  max-width: 12em;
+}
+.lt-ie9 .matches-wrapper .match-details .score-prediction-section .goals-list {
+  width: 100%;
+  background: #fff!important;
+}
+.lt-ie8 .matches-wrapper header {
+  height: 39px;
+}
+
+
+/*.lt-ie8 .matches-wrapper .support+.support, 
+.lt-ie8 .matches-wrapper .advert+.support, 
+.lt-ie8 .matches-wrapper .advert+.advert, 
+.lt-ie8 .matches-wrapper .support+.advert {
+  clear: both;
+  margin-top: -1em;
+}*/
+
+.lt-ie9 .match-content.panel.video .content-title .media-object:before {
+  background: url(../images/video-button-ie.png) no-repeat center center;
+}
+
+.lt-ie8 .match-content.panel.video .content-title .media-object {
+   *zoom: expression( 
+          this.runtimeStyle.zoom="1",
+          this.appendChild( document.createElement("small") ).className="before"
+         );
+}
+.lt-ie8 .match-content.panel.video .content-title .media-object small {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: block;
+  background: url(../images/video-button-ie.png) no-repeat center center;
+}
+
+.lt-ie8 .team-league-details .line-ups .team-home, 
+.lt-ie8 .team-league-details .line-ups .team-away {
+  width: 49.6%;
+}
+.lt-ie8 .team-league-details .panel-heading .panel-title a {
+  border-bottom: 1px solid #cbcbcb;
+  cursor: pointer;
+}
+.lt-ie8 .team-league-details .panel  .panel-collapse.in {
+  zoom: 1;
+  display: block;
+  height: auto;
+  width: 100%;
+}
+
+
+.lt-ie9 .match-contents .match-content.panel .panel-collapse.imageWrapper {
+   background: #000;
+}
+.lt-ie9 .match-contents .match-content.panel .panel-collapse.imageWrapper img {
+  filter: alpha(opacity=40);
+}
+
+.lt-ie8 .match-contents .match-content.panel .panel-collapse.imageWrapper{
+  position: relative;
+  *zoom: expression( 
+          this.runtimeStyle.zoom="1",
+          this.appendChild( document.createElement("small") ).className="before"
+         );
+}
+.lt-ie8 .match-contents .match-content.panel.video .panel-collapse.imageWrapper small {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: block;
+  background: url(../images/video-button.png) no-repeat center center;
+}
+
+
+
+
+.lt-ie8 .match-contents .match-content.panel >h2.read-more {
+  width: 100%;
+}
+.lt-ie8  .match-contents .match-content.panel.open>h2.read-more {
+  width: 98%;
+}
+.lt-ie8 .match-contents .match-content.panel.blog >h2.read-more,
+.lt-ie8 .match-contents .match-content.panel.reward >h2.read-more {
+  width: auto;
+}
+
+
+.lt-ie8 .match-contents .match-content a.form-submit, 
+.lt-ie8 .match-contents .match-content.results a.form-submit {
+  width: auto;
+}
+
+.lt-ie9 .match-contents .match-content.action-blocks {
+  overflow: visible;
+  background: #689ccf;
+  filter: none;
+}
+.lt-ie9 .match-contents .match-content.action-blocks .select {
+  position: relative;
+  z-index: 2;
+  overflow: visible;
+}
+.lt-ie8 .match-contents .match-content.action-blocks {
+  position: static;
+  z-index: 2;
+  overflow: visible;
+}
+
+
+.lt-ie8  .match-contents .top-predictions-list ol li {
+  overflow: hidden;
+}
+
+.lt-ie8 .match-contents .top-predictions-list ol li figure span {
+  height: 13px;
+}
+
+.lt-ie8 .match-contents .score-prediction {
+  padding-bottom: 1em;
+}
+.lt-ie8 .match-contents .body.score-prediction-section {
+  padding-bottom: 0;
+}
+
+.ie8 .score-prediction-section .score span input {
+  margin-top: 0.1em;
+  padding-top: 0;
+}
+
+.lt-ie8 .score-prediction-section .score span input {
+  padding-top: 0;
+  width: 27px;
+}
+
+
+/*.ie8 .support + .support, 
+.ie8 .advert + .support,
+.ie8 .advert + .advert,
+.ie8 .support + .advert,*/
+.ie8 .support.active + .support, 
+.ie8 .advert  + .support,
+.ie8 .advert + .advert,
+.ie8 .support.active + .advert {
+/*    margin-left: 28%;*/
+  }
+
+
+/***fan-score***/
+.lt-ie8 .fan-scores .team-and-league-average section+section {
+  margin-left: -1px;
+}
+.lt-ie8 .fan-scores .user-details {
+  height: 48px;
+}
+.lt-ie8 .fan-scores .user-details p {
+  padding-top: 0.5em;
+}
+.lt-ie8 .fan-scores .teams-weekly-scores {
+  margin: 1em 0;
+}
+
+
+.lt-ie8 .countdown-period {
+  padding-bottom: 0.3em;
+}
+.lt-ie8 .countdown-amount {
+  position: relative;
+  *zoom: expression( 
+          this.runtimeStyle.zoom="1",
+          this.appendChild( document.createElement("small") ).className="before"
+         );
+}
+.lt-ie8 .countdown-amount small {
+  display: block;
+  position: absolute;
+  top: 15px;
+  left: -2px;
+  width: 44px;
+  height: 1px;
+  background: #1a1a1a;
+  border-bottom: 1px solid #383838 ;
+}
+
+.lt-ie8 .rewards-wrapper, .lt-ie8 .match-contents {
+  position: relative;
+  overflow: hidden;
+}
+.lt-ie8 .rewards-wrapper .match-content.reward {
+  position: relative!important;
+  display: block!important;
+  top: auto!important;
+  left: auto!important;
+  right: auto!important;
+  bottom: auto!important;
+  margin: 1em 0 0 0!important;
+  width: 100%;
+  height: auto!important;
+}
+.lt-ie8 .rewards-wrapper .match-contents {
+    padding: 0 1em;
+}
+
+
+.lt-ie8 .match-content .content-body {
+  height: auto!important;
+  zoom: 1;
+}
+
+.ie8 .rewards-wrapper .match-content.reward {
+  margin-bottom: 10px!important;
+}
+
+.lt-ie8 .fan-scores .friends {
+  margin: 1em 0;
+}
+
+.lt-ie8 .match-contents {
+  padding-bottom: 1em;
+}
+.ie8 .rewards-wrapper .match-content.reward {
+  margin-left: 1em!important;
+}
+
+.lt-ie8 .match-content.panel.video .content-body.panel-collapse {
+  display: none!important;
+}
+.lt-ie8 .match-content.panel.video.openie7 .content-body.panel-collapse {
+  display: block!important;
+}
+
+
+.ie8 .match-contents.centered{margin:0 auto;overflow:hidden}.ie8 .centered{margin:0 auto}.ie8 .centered .match-content{position:relative;float:left;margin:0 0 15px!important;width:32.3%}.ie8 .centered .match-content.w2{width:65.9%}.ie8 .centered .match-content.panel.video,.ie8 .centered .match-content.panel.reward{text-align:left}.ie8 .centered .match-content.panel.video .panel-collapse.imageWrapper,.ie8 .centered .match-content.panel.reward .panel-collapse.imageWrapper,.ie8 .centered .match-content.panel.video .read-more+.time-meta-reward-locked,.ie8 .centered .match-content.panel.reward .read-more+.time-meta-reward-locked{display:none!important}.ie8 .centered .match-content.panel.video>h2,.ie8 .centered .match-content.panel.reward>h2{padding:.5em .6em 0;background-image:none!important;border-top-color:#fff;text-align:left;font-size:1.8em;cursor:default!important}.ie8 .centered .match-content.panel.video .content-title,.ie8 .centered .match-content.panel.reward .content-title{padding:0;height:auto;background:0;line-height:1.2;cursor:default!important}.ie8 .centered .match-content.panel.video .content-title .reward-points-meta,.ie8 .centered .match-content.panel.reward .content-title .reward-points-meta{display:inline}.ie8 .centered .match-content.panel.video .content-title .media-object,.ie8 .centered .match-content.panel.reward .content-title .media-object{display:none}.ie8 .centered .match-content.panel.video .content-title .media-heading,.ie8 .centered .match-content.panel.reward .content-title .media-heading{display:block;padding:0}.ie8 .centered .match-content.panel.video .content-title .media-heading h2,.ie8 .centered .match-content.panel.reward .content-title .media-heading h2{display:block;padding:.7em 3em 0 .6em;background-image:none!important;border-top-color:#fff;text-align:left;font-size:1.8em;line-height:1.2}.ie8 .centered .match-content.panel.video .user-content+.imageWrapper,.ie8 .centered .match-content.panel.reward .user-content+.imageWrapper{margin-bottom:0}.ie8 .centered .match-content.panel.video .videoWrapper,.ie8 .centered .match-content.panel.reward .videoWrapper{margin-bottom:-1px}.ie8 .centered .match-content.panel.video .content-body,.ie8 .centered .match-content.panel.reward .content-body{display:block!important;position:relative!important;left:0!important;z-index:2;padding:.5em 1em 0}.ie8 .centered .match-content.panel.video .content-body p,.ie8 .centered .match-content.panel.reward .content-body p{color:#333;font:normal 1.5em/1.2 'NettoOT',arial}.ie8 .centered .match-content.panel.video hr,.ie8 .centered .match-content.panel.reward hr{text-align:left}.ie8 .centered .match-content.panel.video .social-links,.ie8 .centered .match-content.panel.reward .social-links{float:right;margin:0 0 1em 2em!important}.ie8 .centered .match-content.panel.video .social-links li,.ie8 .centered .match-content.panel.reward .social-links li{display:block;padding:0 0 .5em 0}.ie8 .centered .match-content.panel.video a.form-submit,.ie8 .centered .match-content.panel.reward a.form-submit{margin:0 0 .5em}.ie8 .centered .match-content.panel.video .panel-close-button,.ie8 .centered .match-content.panel.reward .panel-close-button{display:none!important}.ie8 .centered .match-content.panel.video.reward.locked .content-title,.ie8 .centered .match-content.panel.reward.reward.locked .content-title{background-color:#fff}.ie8 .centered .match-content.panel.video.reward.locked .content-title .media-heading .time-meta-reward-locked,.ie8 .centered .match-content.panel.reward.reward.locked .content-title .media-heading .time-meta-reward-locked{margin-left:1em;margin-bottom:.3em}.ie8 .centered .match-content.panel.video.reward.locked .content-body,.ie8 .centered .match-content.panel.reward.reward.locked .content-body{padding:0 1em 0}.ie8 .team-league-details .panel{position:relative;float:left;margin:0 0 15px!important;width:32.3%}.ie8 .team-league-details .panel .panel-heading .panel-title a{background-image:none!important}.ie8 .team-league-details .panel .panel-collapse{display:block!important;height:auto!important}.ie8 .team-league-details .panel .panel-close-button{display:none!important}.ie8 .team-league-details .panel .panel-body{height:400px;overflow:auto}.ie8 .match-content.empty{font-size:0!important;margin:0!important;line-height:0!important;height:0!important}.ie8 .centered .fan-scores-content{position:relative;float:left;margin:0 0 15px!important;width:32.3%}

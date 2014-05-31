@@ -1,0 +1,86 @@
+<?php
+
+/* ====================== */
+/* ==== DRUPAL HOOKS ==== */
+/* ====================== */
+
+/**
+ * Implements hook_menu().
+ */
+function redirect_after_logout_menu() {
+  $items = array();
+  $items['admin/config/system/redirect_after_logout'] = array(
+    'title' => 'Redirect after logout',
+    'description' => 'Redirect after logout settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('redirect_after_logout_settings_form'),
+    'access arguments' => array('redirect after logout administer'),
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function redirect_after_logout_permission() {
+  return array(
+    'redirect after logout administer ' => array(
+      'title' => t('Administer Redirect after logout'),
+      'description' => t('Perform administration tasks for Redirect after logout.'),
+    ),
+    'redirect after logout user' => array(
+      'title' => t('Redirect user after logout'),
+      'description' => t('Redirect user after logout.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_user_logout().
+ */
+function redirect_after_logout_user_logout($account) {
+  if (user_access('redirect after logout user')) {
+    $destination = &drupal_static(__FUNCTION__);
+    $destination = token_replace(variable_get('redirect_after_logout_destination', ''));
+  }
+}
+
+/**
+ * Implements hook_drupal_goto_alter().
+ */
+function redirect_after_logout_drupal_goto_alter(&$path, &$options, &$http_response_code) {
+  $destination = &drupal_static('redirect_after_logout_user_logout');
+  if (!$path && $destination) {
+    drupal_goto($destination);
+  }
+}
+
+/* ====================== */
+/* == MODULE FUNCTIONS == */
+/* ====================== */
+
+function redirect_after_logout_settings_form() {
+  $form = array();
+  $form['info'] = array(
+    '#markup' => 'Info text.', // TODO
+  );
+  $form['redirect_after_logout_destination'] = array(
+    '#type' => 'textfield',
+    '#title' => t('User redirect destination, after logout:'),
+    '#default_value' => variable_get('redirect_after_logout_destination', ''),
+  );
+  if (module_exists('token')) {
+    // Add the token help to a collapsed fieldset at the end of the configuration page.
+    $form['token_help'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Available Tokens List'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    );
+    $form['token_help']['content'] = array(
+      '#theme' => 'token_tree',
+      '#token_types' => array(),
+    );
+  }
+  return system_settings_form($form);
+}

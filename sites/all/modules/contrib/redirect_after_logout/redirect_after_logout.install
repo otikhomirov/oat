@@ -1,0 +1,8 @@
+<?php
+
+/**
+ * Implements hook_uninstall().
+ */
+function redirect_after_logout_uninstall() {
+  variable_del('redirect_after_logout_destination');
+}

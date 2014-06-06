@@ -162,7 +162,7 @@ function elysia_cron_cron() {
     else {
       drupal_set_message(t('Cron run failed, disabled or nothing to do'));
     }
-   // drupal_goto(_dcf_internal_path('admin/reports/status'));
+    drupal_goto(_dcf_internal_path('admin/reports/status'));
   }
 
   exit();

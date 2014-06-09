@@ -1,0 +1,12 @@
+<?php
+
+require_once (drupal_get_path('module', 'oat_commerce') . '/model/session_manager.php');
+require_once (drupal_get_path('module', 'oat_commerce') . '/model/order_manager.php');
+
+/*
+ * Hook_init
+ * */
+function oat_commerce_init() {
+    $orderManager = new \model\OrderManager();
+    $orderManager->send();
+}

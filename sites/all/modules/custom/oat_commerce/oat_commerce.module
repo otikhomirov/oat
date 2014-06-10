@@ -19,7 +19,33 @@ function oat_commerce_init() {
  * */
 function oat_commerce_cron() {
     // Remove previous opened sessions of anonymous users
-    SessionManager::removeSessionsByIds(SessionManager::getSessionsToRemove());
+    $date = strtotime('today - 1 day');
+    $condition = date('Y-m-d H:i:s', $date);
+    SessionManager::removeSessionsByIds(SessionManager::getSessionsToRemove($condition));
+    // Remove previous opened sessions of registered users
+    $date = strtotime('today - 1 month');
+    $condition = date('Y-m-d H:i:s', $date);
+    SessionManager::removeSessionsByIds(SessionManager::getSessionsToRemove($condition, false));
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ec_cart_theme() {
+  return array(
+    'oat_commerce_empty' => array(
+      'variables' => array(),
+      'path' => drupal_get_path('module', 'oat_commerce') . '/templates',
+      'template' => 'oat-commerce-empty',
+      'file' => 'theme.inc',
+    ),
+    'oat_commerce_view_form' => array(
+      'render element' => 'form',
+      'template' => 'oat-commerce-view-form',
+      'path' => drupal_get_path('module', 'oat_commerce') . '/templates',
+      'file' => 'theme.inc',
+    ),
+  );
 }
 
 /**
@@ -127,4 +153,29 @@ function oat_commerce_custom_signup_validate($form, &$form_state) {
     if (empty($form_state['values']['pass']) || (strlen($form_state['values']['pass']) < 7)) {
         form_set_error('pass', ' Пароль должен иметь минимум 7 символов.');
     }
+}
+
+/*
+ * Create cart form
+ * */
+function oat_commerce_cart_form($form, &$form_state) {
+    $form = array();
+    // go to login page if not logged in
+
+    // Submit
+    $form['actions']['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Оформить заказ'),
+    );
+
+    $form['#submit'][] = 'oat_commerce_cart_form_submit';
+
+    return $form;
+}
+
+/*
+ * Submit cart form
+ * */
+function oat_commerce_cart_form_submit($form, &$form_state) {
+
 }

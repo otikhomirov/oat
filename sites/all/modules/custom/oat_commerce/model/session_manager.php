@@ -98,11 +98,12 @@ class SessionManager {
     /**
      * Get ids of not closed sessions of anonymous users for the last days
      * */
-    public static function getSessionsToRemove() {
+    public static function getSessionsToRemove($dateCondition, $forAnon = true) {
         $query = db_select('oat_session', 'tbl')->fields('tbl');
-        $date = strtotime('today - 1 day');
-        $query->condition('created', date('Y-m-d H:i:s', $date), '<');
-        $query->condition('uid', 0);
+        $query->condition('created',  $dateCondition, '<');
+        if($forAnon) {
+            $query->condition('uid', 0);
+        }
         $objects = $query->execute();
         $ids = array();
         while ($record = $objects->fetchAssoc()) {

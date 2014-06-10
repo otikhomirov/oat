@@ -74,8 +74,10 @@ class OrderManager {
         }
     }
 
-    /*
+    /**
      * Send order, clear session
+     * @params
+     *  $aid - (int) AddressID
      * */
     public function send() {
         $this->save();
@@ -103,13 +105,12 @@ class OrderManager {
                 global $user;
                 $uid = $user->uid;
             }
-            // TODO: save user address
 
             // Save order
             $orderId = db_insert('oat_order')
-                        ->fields(array('number', 'uid', 'aid', 'status'))
-                        ->values(array(uniqid(), $uid, 0, 0))
-                        ->execute();
+                ->fields(array('number', 'uid', 'aid', 'status'))
+                ->values(array(uniqid(), $uid, 0, 0))
+                ->execute();
 
             // Save order items
             if(!empty($orderId)) {

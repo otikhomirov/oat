@@ -14,9 +14,11 @@ namespace model;
 class SessionManager {
     private $_sessionId;
     private $_cookieManager;
+    private $_isAnonymous;
 
     public function __construct() {
         $this->_cookieManager = new CookieManager();
+        $this->_isAnonymous = true;
     }
 
     /*
@@ -41,6 +43,7 @@ class SessionManager {
                 global $user;
                 $uid = $user->uid;
                 $prefix = $uid;
+                $this->_isAnonymous = false;
             }
 
             $this->_cookieManager->setCookie($prefix);
@@ -65,6 +68,11 @@ class SessionManager {
     public function close() {
         $this->_cookieManager->removeCookie();
         $this->remove();
+        // Remove saved address if user is anonymous
+        if($this->_isAnonymous) {
+            $addressManager = new AddressManager();
+            $addressManager->removeSessionAddress($this->getSessionId());
+        }
     }
 
     /*

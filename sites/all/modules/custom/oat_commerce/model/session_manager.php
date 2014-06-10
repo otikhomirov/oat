@@ -126,26 +126,28 @@ class SessionManager {
  * Cookie manager
  * */
 class CookieManager {
+    private $_cookie = null;
     /*
      * Set cookie
      * */
     public function setCookie($prefix) {
         $cookieKey = uniqid($prefix);
         user_cookie_save(array('oat_cart_cookie' => $cookieKey));
+        $this->_cookie = $cookieKey;
     }
 
     /*
      * Check if cookie exists
      * */
     public function isCookieExists() {
-        return !empty($_COOKIE['Drupal_visitor_oat_cart_cookie']);
+        return !empty($_COOKIE['Drupal_visitor_oat_cart_cookie']) || !empty($this->_cookie);
     }
 
     /*
      * Get cookie value
      * */
     public function getCookie() {
-        return $_COOKIE['Drupal_visitor_oat_cart_cookie'];
+        return !empty($_COOKIE['Drupal_visitor_oat_cart_cookie']) ? $_COOKIE['Drupal_visitor_oat_cart_cookie'] : $this->_cookie;
     }
 
     /*

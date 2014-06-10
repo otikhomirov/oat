@@ -1,5 +1,5 @@
-name = Bootstrap Sub-theme
-description = A Bootstrap Sub-theme.
+name = OAT Bootstrap Theme
+description = OAT Bootstrap Sub-theme.
 core = 7.x
 base theme = bootstrap
 

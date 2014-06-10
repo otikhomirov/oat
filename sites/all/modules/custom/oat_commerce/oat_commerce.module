@@ -1,6 +1,6 @@
 <?php
 
-define('CART_PAGE', '/cart');
+define('CART_PAGE_ID', 1);
 
 require_once (drupal_get_path('module', 'oat_commerce') . '/model/session_manager.php');
 require_once (drupal_get_path('module', 'oat_commerce') . '/model/order_manager.php');
@@ -20,4 +20,111 @@ function oat_commerce_init() {
 function oat_commerce_cron() {
     // Remove previous opened sessions of anonymous users
     SessionManager::removeSessionsByIds(SessionManager::getSessionsToRemove());
+}
+
+/**
+ * Implements hook_form_alter().
+ * Common hook to alter site forms
+ */
+function oat_commerce_form_alter(&$form, &$form_state, $form_id) {
+    switch ($form_id) {
+        case 'user_profile_form': // User profile form (used in Forgot password)
+            break;
+        case 'user_login':
+        case 'user_login_block': // User login form
+            $form['#attributes'] = array('autocomplete' => array('off'));
+            $form['name']['#title'] = t('E-mail');
+            $form['pass']['#title'] = t('Пароль');
+            $form['remember_me']['#title'] = t('Запомнить меня');
+            $form['links']['#markup'] = '<ul><li><a class="" title="Don\'t have an account ?" href="/user/register">Еще не зарегестрированны?</a></li>
+                                         <li><a class="forgotten-password" title="Forgotten password" href="/user/password">Забыли пароль?</a></li><ul>';
+            $form['name']['#description'] = t('');
+            $form['pass']['#description'] = t('');
+            $form['actions']['submit']['#value'] = t('Войти');
+            $form['name']['#element_validate'] = array('oat_commerce_email_element_validate');
+            break;
+        case 'user_register_form': // User register form
+            if (!path_is_admin(current_path())) {
+                $form['#attributes'] = array('autocomplete' => array('off'));
+
+                $form['field_full_name']['und'][0]['value']['#attributes']['placeholder'] = t("Полное имя");
+                $form['field_full_name']['und'][0]['value']['#title'] = t("Полное имя");
+                // User registration form
+                $form['account']['name']['#element_validate'][] = 'oat_commerce_user_login_validate';
+                $form['account']['name']['#type'] = 'hidden';
+                $form['account']['name']['#value'] = 'email_registration_' . user_password();
+
+                $form['account']['mail']['#attributes']['placeholder'] = t("E-mail");
+                $form['account']['mail']['#description'] = t('');
+
+                $form['account']['pass']['#type'] = "password";
+                $form['account']['pass']['#attributes']['placeholder'] = t("Пароль");
+                $form['account']['pass']['#title'] = t('Пароль');
+                $form['account']['pass']['#description'] = t('');
+                $form['account']['pass']['#minlength'] = 7;
+
+                $form['actions']['submit']['#value'] = t('Зарегистрироваться');
+                $form['#validate'][] = 'oat_commerce_custom_signup_validate';
+            }
+            break;
+        case 'user_pass': // Forgot password form
+            $form['actions']['submit']['#value'] = t('Запросить пароль');
+            $form['name']['#element_validate'] = array('oat_commerce_email_element_validate');
+            break;
+        case 'user_pass_reset': // After reset link sent
+            $form['actions']['submit']['#value'] = 'Войти';
+            //user_cookie_save(array('oat_commerce_user_reset_pass' => 1));
+            break;
+        default:
+            break;
+    }
+}
+
+/*
+ * Custom settings form validation
+ * */
+function oat_commerce_email_element_validate($element, &$form_state, $form) {
+    if (!valid_email_address($element['#value'])) {
+        form_error($element, t('Введите корректный e-mail адрес.'));
+    }
+}
+
+/**
+ * User login validation
+ * */
+function oat_commerce_user_login_validate($form, &$form_state) {
+    $name = !empty($form_state['values']['field_full_name']['und'][0]['value']) ? implode('.', explode(' ', trim($form_state['values']['field_full_name']['und'][0]['value']))) : '';
+
+    if (empty($name) && strpos($form_state['values']['mail'], '@')) {
+        $position = strpos($form_state['values']['mail'], '@');
+        $name = substr($form_state['values']['mail'], 1, $position);
+    }
+
+    if (empty($name)) {
+        $name = substr(str_shuffle(str_repeat("0123456789abcdefghijklmnopqrstuvwxyz", 12)), 0, 12);
+    }
+
+    $form_state['values']['name'] = strtolower(unique_name($name));
+}
+
+/**
+ * Generate unique user name while registration
+ * */
+function unique_name($name) {
+    $original_username = $name;
+    $count = 1;
+    while (user_load_by_name($name)) {
+        $name = $original_username . '.' . $count++;
+    }
+
+    return $name;
+}
+
+/*
+ * Before submit user
+ * */
+function oat_commerce_custom_signup_validate($form, &$form_state) {
+    if (empty($form_state['values']['pass']) || (strlen($form_state['values']['pass']) < 7)) {
+        form_set_error('pass', ' Пароль должен иметь минимум 7 символов.');
+    }
 }

@@ -77,7 +77,7 @@ class OrderManager {
             $this->_sessionManager->close();
         } else {
             drupal_set_message('Your session has been expired!');
-            drupal_goto(CART_PAGE);
+            drupal_goto(drupal_get_path_alias('node/'.CART_PAGE_ID));
         }
     }
 

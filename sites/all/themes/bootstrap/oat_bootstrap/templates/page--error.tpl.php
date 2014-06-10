@@ -1,5 +1,5 @@
 <!-- HEADER  -->
-<?php require_once('includes/header.inc'); ?>
+<?php require_once('inc/header.inc'); ?>
 
 <!-- MAIN CONTENT -->
 <div id="main" role="main">
@@ -14,5 +14,5 @@
 </div>
 
 <!-- FOOTER -->
-<?php require_once('includes/footer.inc'); ?>
+<?php require_once('inc/footer.inc'); ?>
 

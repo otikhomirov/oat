@@ -1,6 +1,8 @@
 <?php
 
 define('CART_PAGE_ID', 1);
+define('ADDRESS_PAGE_ID', 2);
+define('SELECT_ADDRESS_PAGE_ID', 3);
 
 require_once (drupal_get_path('module', 'oat_commerce') . '/model/session_manager.php');
 require_once (drupal_get_path('module', 'oat_commerce') . '/model/order_manager.php');
@@ -26,26 +28,6 @@ function oat_commerce_cron() {
     $date = strtotime('today - 1 month');
     $condition = date('Y-m-d H:i:s', $date);
     SessionManager::removeSessionsByIds(SessionManager::getSessionsToRemove($condition, false));
-}
-
-/**
- * Implements hook_theme().
- */
-function ec_cart_theme() {
-  return array(
-    'oat_commerce_empty' => array(
-      'variables' => array(),
-      'path' => drupal_get_path('module', 'oat_commerce') . '/templates',
-      'template' => 'oat-commerce-empty',
-      'file' => 'theme.inc',
-    ),
-    'oat_commerce_view_form' => array(
-      'render element' => 'form',
-      'template' => 'oat-commerce-view-form',
-      'path' => drupal_get_path('module', 'oat_commerce') . '/templates',
-      'file' => 'theme.inc',
-    ),
-  );
 }
 
 /**
@@ -162,6 +144,13 @@ function oat_commerce_cart_form($form, &$form_state) {
     $form = array();
     // go to login page if not logged in
 
+    $order_manager = new OrderManager();
+    if($order_manager->getNumberOfItemsInCart() == 0) {
+        $form['empty_cart'] = array(
+            '#markup' => '<div class="settings-field">Корзина пуста.</div>',
+        );
+    }
+
     // Submit
     $form['actions']['submit'] = array(
         '#type' => 'submit',
@@ -177,5 +166,153 @@ function oat_commerce_cart_form($form, &$form_state) {
  * Submit cart form
  * */
 function oat_commerce_cart_form_submit($form, &$form_state) {
+    // TODO: save updated order items
+    if(user_is_logged_in()) {
+        drupal_goto(drupal_get_path_alias('node/'.SELECT_ADDRESS_PAGE_ID));
+    } else {
+        drupal_goto(drupal_get_path_alias('node/'.ADDRESS_PAGE_ID));
+    }
+}
 
+/*
+ * Create select address form
+ * */
+function oat_commerce_select_address_form($form, &$form_state) {
+    if(!user_is_logged_in()) { // go to address form if user is not logged in
+        drupal_goto(drupal_get_path_alias('node/'.ADDRESS_PAGE_ID));
+    }
+
+    global $user;
+    $address_manager = new AddressManager();
+    $user_addresses = $address_manager->getUserAddresses($user->uid);
+
+    if(empty($user_addresses)) { // go to address form if user doesn't have addresses
+        drupal_goto(drupal_get_path_alias('node/'.ADDRESS_PAGE_ID));
+    }
+
+    $form = array();
+
+    foreach($user_addresses as $address) {
+
+        $form['address_'.$address['id']] = array(
+            '#prefix' => '<a href="/'.drupal_get_path_alias('node/'.ADDRESS_PAGE_ID).'?adr='.$address['id'].'"><div class="address">',
+            '#suffix' => '</div></a>',
+        );
+
+        $form['address_'.$address['id']]['info'] = array(
+            '#markup' => '<div class="city">'.$address['city'].'</div>
+                          <div class="street">'.$address['street'].'</div>
+                          <div class="house">'.$address['house'].'</div>
+                          <div class="building">'.$address['building'].'</div>
+                          <div class="flat">'.$address['flat'].'</div>
+                          <div class="phone">'.$address['phone'].'</div>',
+        );
+    }
+
+    $form['new_address'] = array(
+        '#markup' => '<a href="/'.drupal_get_path_alias('node/'.ADDRESS_PAGE_ID).'">Другой адрес</a>',
+    );
+
+    return $form;
+}
+
+/*
+ * Create address form
+ * */
+function oat_commerce_address_form($form, &$form_state) {
+    $form = array();
+
+    $address_info = array();
+    if(user_is_logged_in() && !empty($_GET['adr'])) {
+        global $user;
+        $address_manager = new AddressManager();
+        $address_info = $address_manager->getUserAddress($user->uid, (int)$_GET['adr']);
+    }
+
+    // City
+    $form['city'] = array(
+        '#prefix' => '<div class="address-field">',
+        '#suffix' => '</div>',
+        '#type' => 'textfield',
+        '#title' => t('Город'),
+        '#required' => TRUE,
+        '#default_value' => !empty($address_info['city']) ? $address_info['city'] : 'Минск',
+        '#maxlength' => 40,
+    );
+
+    // Street
+    $form['street'] = array(
+        '#prefix' => '<div class="address-field">',
+        '#suffix' => '</div>',
+        '#type' => 'textfield',
+        '#title' => t('Улица'),
+        '#required' => TRUE,
+        '#default_value' => !empty($address_info['street']) ? $address_info['street'] : '',
+        '#maxlength' => 40,
+    );
+
+    // House
+    $form['house'] = array(
+        '#prefix' => '<div class="address-field">',
+        '#suffix' => '</div>',
+        '#type' => 'textfield',
+        '#title' => t('Дом'),
+        '#required' => TRUE,
+        '#default_value' => !empty($address_info['house']) ? $address_info['house'] : '',
+        '#maxlength' => 3,
+    );
+
+    // Building
+    $form['building'] = array(
+        '#prefix' => '<div class="address-field">',
+        '#suffix' => '</div>',
+        '#type' => 'textfield',
+        '#title' => t('Корпус'),
+        '#required' => TRUE,
+        '#default_value' => !empty($address_info['building']) ? $address_info['building'] : '',
+        '#maxlength' => 3,
+    );
+
+    // Flat
+    $form['flat'] = array(
+        '#prefix' => '<div class="address-field">',
+        '#suffix' => '</div>',
+        '#type' => 'textfield',
+        '#title' => t('Квартира'),
+        '#required' => TRUE,
+        '#default_value' => !empty($address_info['flat']) ? $address_info['flat'] : '',
+        '#maxlength' => 10,
+    );
+
+    // Phone
+    $form['phone'] = array(
+        '#prefix' => '<div class="address-field">',
+        '#suffix' => '</div>',
+        '#type' => 'textfield',
+        '#title' => t('Телефон'),
+        '#required' => TRUE,
+        '#default_value' => !empty($address_info['phone']) ? $address_info['phone'] : '',
+        '#maxlength' => 20,
+    );
+
+    // Submit
+    $form['actions']['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Оформить заказ'),
+    );
+
+    $form['#submit'][] = 'oat_commerce_address_form_submit';
+
+    return $form;
+}
+
+/**
+ * Submit order
+ * */
+function oat_commerce_address_form_submit($form, &$form_state) {
+    // TODO: save address
+    $address_manager = new AddressManager();
+
+    $order_manager = new OrderManager();
+    //$order_manager->send();
 }

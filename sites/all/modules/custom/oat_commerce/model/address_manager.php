@@ -58,6 +58,26 @@ class AddressManager {
         $query->orderBy('created', 'DESC');
         $objects = $query->execute();
         while ($record = $objects->fetchAssoc()) {
+            $addresses[] = $record;
+        }
+
+        return $addresses;
+    }
+
+    /**
+     * Get user address
+     * @params
+     *  $uid - (int) User ID
+     *  $aid - (int) Address ID
+     * */
+    public function getUserAddress($uid, $aid) {
+        $addresses = array();
+
+        $query = db_select('oat_address', 'tbl')->fields('tbl');
+        $query->condition('uid', $uid);
+        $query->condition('id', $aid);
+        $objects = $query->execute();
+        while ($record = $objects->fetchAssoc()) {
             $addresses = $record;
         }
 

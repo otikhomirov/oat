@@ -1,9 +1,21 @@
-<?php if(!empty($oat_commerce_cart_form)) : ?>
+<?php if(!empty($form_type)) : ?>
     <!-- Cart form -->
     <?php if (!empty($messages)) : ?>
         <?php print $messages; ?>
     <?php endif; ?>
-    <?= $oat_commerce_cart_form;?>
+    <?php
+        switch($form_type) {
+            case 1:
+                echo $oat_commerce_cart_form;
+                break;
+            case 2:
+                echo $oat_commerce_address_form;
+                break;
+            case 3:
+                echo $oat_commerce_select_address_form;
+                break;
+        }
+    ?>
 
 <?php else : ?>
 

@@ -118,12 +118,31 @@ function oat_bootstrap_preprocess_node(&$variables) {
     $node = $variables['node'];
     switch ($node->type) {
         case 'page':
+            $form_type = null;
             /* Check if cart page */
             if ($node->nid == CART_PAGE_ID) {
                 $_form = drupal_get_form('oat_commerce_cart_form');
                 $variables['oat_commerce_cart_form'] = drupal_render($_form);
                 $variables['messages'] = theme('status_messages');
+                $form_type = CART_PAGE_ID;
             }
+
+            /* Check if address page */
+            if ($node->nid == ADDRESS_PAGE_ID) {
+                $_form = drupal_get_form('oat_commerce_address_form');
+                $variables['oat_commerce_address_form'] = drupal_render($_form);
+                $variables['messages'] = theme('status_messages');
+                $form_type = ADDRESS_PAGE_ID;
+            }
+
+            /* Check if select address page */
+            if ($node->nid == SELECT_ADDRESS_PAGE_ID) {
+                $_form = drupal_get_form('oat_commerce_select_address_form');
+                $variables['oat_commerce_select_address_form'] = drupal_render($_form);
+                $variables['messages'] = theme('status_messages');
+                $form_type = SELECT_ADDRESS_PAGE_ID;
+            }
+            $variables['form_type'] = $form_type;
             break;
 
         default:

@@ -149,6 +149,7 @@ function oat_commerce_cart_form($form, &$form_state) {
         $form['empty_cart'] = array(
             '#markup' => '<div class="settings-field">Корзина пуста.</div>',
         );
+        return $form;
     }
 
     // Submit

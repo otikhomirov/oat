@@ -1,13 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: oleg.tikhomirov
- * Date: 6/9/14
- * Time: 4:56 PM
- */
-
-namespace model;
-
 /*
  * Session manager
  * */
@@ -54,7 +45,6 @@ class SessionManager {
         $query->condition('cookie_id', $this->_cookieManager->getCookie());
         $objects = $query->execute();
 
-        $sessionId = 0;
         while ($record = $objects->fetchAssoc()) {
             $sessionId = $record['id'];
             $this->_sessionId = $sessionId;
@@ -67,7 +57,7 @@ class SessionManager {
      * */
     public function close() {
         $this->_cookieManager->removeCookie();
-        $this->remove();
+        $this->removeCurrentSession();
         // Remove saved address if user is anonymous
         if($this->_isAnonymous) {
             $addressManager = new AddressManager();
@@ -88,12 +78,47 @@ class SessionManager {
     /*
      * Remove session
      * */
-    private function remove() {
-        $sessionId = $this->getSessionId();
+    public function removeCurrentSession() {
+        self::removeSessionsByIds($this->getSessionId());
+    }
 
-        if(!empty($sessionId)) {
-            db_delete('oat_session')->condition('id', $sessionId)->execute();
+    /**
+     * Remove sessions by ids
+     * */
+    public static function removeSessionsByIds($ids) {
+        if(!empty($ids)) {
+            if(!is_array($ids)) {
+                $ids = array($ids);
+            }
+
+            db_delete('oat_session')->condition('id', $ids, 'IN')->execute();
         }
+    }
+
+    /**
+     * Get ids of not closed sessions of anonymous users for the last days
+     * */
+    public static function getSessionsToRemove() {
+        $query = db_select('oat_session', 'tbl')->fields('tbl');
+        $date = strtotime('today - 1 day');
+        $query->condition('created', date('Y-m-d H:i:s', $date), '<');
+        $query->condition('uid', 0);
+        $objects = $query->execute();
+        $ids = array();
+        while ($record = $objects->fetchAssoc()) {
+            $ids[] = $record['id'];
+        }
+        return $ids;
+    }
+
+    /**
+     * Check session if exists
+     * */
+    public function isSessionExists() {
+        $query = db_select('oat_session', 'tbl')->fields('tbl');
+        $query->condition('id', $this->getSessionId());
+        $objects = $query->execute();
+        return $objects->rowCount();
     }
 }
 

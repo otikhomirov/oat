@@ -1,12 +1,23 @@
 <?php
 
+define('CART_PAGE', '/cart');
+
 require_once (drupal_get_path('module', 'oat_commerce') . '/model/session_manager.php');
 require_once (drupal_get_path('module', 'oat_commerce') . '/model/order_manager.php');
+require_once (drupal_get_path('module', 'oat_commerce') . '/model/address_manager.php');
 
 /*
  * Hook_init
  * */
 function oat_commerce_init() {
-    $orderManager = new \model\OrderManager();
-    $orderManager->send();
+    $session_manager = new SessionManager();
+    $session_manager->start();
+}
+
+/*
+ * Hook_cron
+ * */
+function oat_commerce_cron() {
+    // Remove previous opened sessions of anonymous users
+    SessionManager::removeSessionsByIds(SessionManager::getSessionsToRemove());
 }

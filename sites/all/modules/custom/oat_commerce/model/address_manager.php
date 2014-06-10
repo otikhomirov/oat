@@ -1,13 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: oleg.tikhomirov
- * Date: 6/10/14
- * Time: 1:41 PM
- */
-
-namespace model;
-
 /*
  * Addresses manager
  * */

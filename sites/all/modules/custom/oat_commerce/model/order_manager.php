@@ -1,14 +1,5 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: oleg.tikhomirov
- * Date: 6/9/14
- * Time: 4:53 PM
- */
-
-namespace model;
-
-/**
  * Order manager
  */
 class OrderManager {
@@ -79,10 +70,15 @@ class OrderManager {
      * @params
      *  $aid - (int) AddressID
      * */
-    public function send() {
-        $this->save();
-        $this->clearCart();
-        $this->_sessionManager->close();
+    public function send($aid) {
+        if($this->_sessionManager->isSessionExists()) {
+            $this->save($aid);
+            $this->clearCart();
+            $this->_sessionManager->close();
+        } else {
+            drupal_set_message('Your session has been expired!');
+            drupal_goto(CART_PAGE);
+        }
     }
 
     /*
@@ -97,7 +93,7 @@ class OrderManager {
     /*
      * Save order
      * */
-    private function save() {
+    private function save($aid) {
         $items = $this->itemsInCart();
         if(!empty($items)) {
             $uid = 0;
@@ -109,7 +105,7 @@ class OrderManager {
             // Save order
             $orderId = db_insert('oat_order')
                 ->fields(array('number', 'uid', 'aid', 'status'))
-                ->values(array(uniqid(), $uid, 0, 0))
+                ->values(array(uniqid(), $uid, $aid, 0))
                 ->execute();
 
             // Save order items

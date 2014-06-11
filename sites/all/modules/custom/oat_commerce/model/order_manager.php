@@ -25,7 +25,7 @@ class OrderManager {
         $query->condition('sid', $this->_sessionManager->getSessionId());
         $objects = $query->execute();
         while ($record = $objects->fetchAssoc()) {
-            $items = $record;
+            $items[$record['nid']] = $record;
         }
         return $items;
     }
@@ -34,10 +34,13 @@ class OrderManager {
      * Add item to cart
      * */
     public function addToCart($nid, $quantity) {
-        db_insert('oat_cart')
-            ->fields(array('sid', 'nid', 'quantity'))
-            ->values(array($this->_sessionManager->getSessionId(), $nid, $quantity))
-            ->execute();
+        if(!in_array($nid, array_keys($this->itemsInCart()))) {
+            return db_insert('oat_cart')
+                ->fields(array('sid', 'nid', 'quantity'))
+                ->values(array($this->_sessionManager->getSessionId(), $nid, $quantity))
+                ->execute();
+        }
+        return -1;
     }
 
     /*

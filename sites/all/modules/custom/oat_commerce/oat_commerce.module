@@ -9,6 +9,19 @@ require_once (drupal_get_path('module', 'oat_commerce') . '/model/order_manager.
 require_once (drupal_get_path('module', 'oat_commerce') . '/model/address_manager.php');
 
 /*
+ * Hook_menu
+ * */
+function oat_commerce_menu() {
+    $items = array();
+    $items['cart/add'] = array(
+        'page callback' => 'oat_add_to_cart',
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+    );
+    return $items;
+}
+
+/*
  * Hook_init
  * */
 function oat_commerce_init() {
@@ -316,4 +329,18 @@ function oat_commerce_address_form_submit($form, &$form_state) {
 
     $order_manager = new OrderManager();
     //$order_manager->send();
+}
+
+/**
+ * Ajax add to cart
+ * */
+function oat_add_to_cart() {
+    if(!empty($_POST['nid']) && !empty($_POST['quantity'])) {
+        $order_manager = new OrderManager();
+        $id = $order_manager->addToCart($_POST['nid'], $_POST['quantity']);
+        echo (int)$id;
+        drupal_exit();
+    }
+    echo 0;
+    drupal_exit();
 }

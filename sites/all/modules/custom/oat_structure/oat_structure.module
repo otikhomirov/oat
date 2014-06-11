@@ -1,0 +1,125 @@
+<?php
+define('VOC_SECTIONS_ID', 3);
+define('VOC_CATEGORIES_ID', 2);
+define('VOC_GROUPS_ID', 4);
+
+/*
+ * Hook_init
+ * */
+function oat_structure_init() {
+    oat_structure_get_structure();
+}
+
+/**
+ * Get structure
+ * */
+function oat_structure_get_structure() {
+    $structure = array();
+    $sections = taxonomy_get_tree(VOC_SECTIONS_ID);
+    foreach($sections as &$section) {
+        $section_item = array();
+        $section_item['tid'] = $section->tid;
+        $section_item['name'] = $section->name;
+        $section_item['categories'] = oat_structure_get_categories($section->tid);
+        $structure[] = $section_item;
+    }
+
+    return $structure;
+}
+
+/**
+ * Get Categories by section or all
+ * @params
+ *  $sid - (int) Section ID, if = 0 - get all categories
+ * */
+function oat_structure_get_categories($sid = 0) {
+    $categories = array();
+    $query = new EntityFieldQuery();
+    $result = $query
+        ->entityCondition('entity_type', 'taxonomy_term')
+        ->propertyCondition('vid', VOC_CATEGORIES_ID)
+        ->fieldCondition('field_section', 'tid', $sid)
+        ->execute();
+
+    if (!empty($result['taxonomy_term'])) {
+        $terms = taxonomy_term_load_multiple(array_keys($result['taxonomy_term']));
+        foreach($terms as $term) {
+            $cat_item = array();
+            $cat_item['tid'] = $term->tid;
+            $cat_item['name'] = $term->name;
+            $cat_item['groups'] = oat_structure_get_groups($term->tid);
+            $categories[] = $cat_item;
+        }
+    }
+
+    return $categories;
+}
+
+/**
+ * Get Groups by category or all
+ * @params
+ *  $cid - (int) Category ID, if = 0 - get all groups
+ * */
+function oat_structure_get_groups($cid = 0) {
+    $groups = array();
+    $query = new EntityFieldQuery();
+    $result = $query
+        ->entityCondition('entity_type', 'taxonomy_term')
+        ->propertyCondition('vid', VOC_GROUPS_ID)
+        ->fieldCondition('field_category', 'tid', $cid)
+        ->execute();
+
+    if (!empty($result['taxonomy_term'])) {
+        $terms = taxonomy_term_load_multiple(array_keys($result['taxonomy_term']));
+        foreach($terms as $term) {
+            $group_item = array();
+            $group_item['tid'] = $term->tid;
+            $group_item['name'] = $term->name;
+            $groups[] = $group_item;
+        }
+    }
+
+    return $groups;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function oat_structure_theme() {
+    return array(
+    'oat_structure_block_template' => array(
+        'variables' => array('structure' => null),
+        'template' => 'theme/oat_structure_block',
+        ),
+    );
+}
+
+/*
+ * hook_block_info()
+ * */
+function oat_structure_block_info() {
+    $blocks = array();
+    $blocks['oat_structure_block'] = array(
+        'info' => t('Custom structure menu'),
+     );
+    return $blocks;
+}
+
+/*
+ * hook_block_view()
+ * */
+function oat_structure_block_view($delta = '') {
+    $block = array();
+    switch($delta) {
+        case 'oat_structure_block' :
+            $block['content'] = array(
+                '#theme' => 'oat_structure_block_template',
+                '#structure' => oat_structure_get_structure(),
+            );
+            break;
+        default:
+            break;
+    }
+
+    return $block;
+}

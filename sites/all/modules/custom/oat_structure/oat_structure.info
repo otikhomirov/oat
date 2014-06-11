@@ -1,0 +1,9 @@
+name = "OAT: Structure"
+description = "Show products structure navigation"
+
+core = 7.x
+version = 7.x-1.0-dev
+project = scoring
+package = Oat
+
+files[] = oat_structure.module

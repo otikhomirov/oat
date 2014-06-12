@@ -1,0 +1,10 @@
+name = "OAT: Discounter"
+description = "Shop discounters manager"
+
+core = 7.x
+version = 7.x-1.0-dev
+project = scoring
+package = Oat
+
+dependencies[] = oat_commerce
+files[] = oat_discounter.module

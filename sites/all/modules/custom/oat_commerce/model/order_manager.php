@@ -17,9 +17,9 @@ class OrderManager {
     }
 
     /*
-     * Init cart with previous items
+     * Returns array of items in cart
      * */
-    private function itemsInCart() {
+    public function itemsInCart() {
         $items = array();
         $query = db_select('oat_cart', 'tbl')->fields('tbl');
         $query->condition('sid', $this->_sessionManager->getSessionId());
@@ -99,27 +99,41 @@ class OrderManager {
     private function save($aid) {
         $items = $this->itemsInCart();
         if(!empty($items)) {
-            $uid = 0;
-            if(user_is_logged_in()) {
-                global $user;
-                $uid = $user->uid;
-            }
+            global $user;
+            $uid = (int)$user->uid;
 
             // Save order
             $orderId = db_insert('oat_order')
-                ->fields(array('number', 'uid', 'aid', 'status'))
-                ->values(array(uniqid(), $uid, $aid, 0))
+                ->fields(array('number', 'sum', 'uid', 'aid', 'status'))
+                ->values(array('ORD'.uniqid(), 0, $uid, $aid, 0))
                 ->execute();
 
+            $sum = 0;
             // Save order items
             if(!empty($orderId)) {
-                foreach ($items as $item) {
-                    db_insert('oat_order_items')
-                        ->fields(array('oid', 'nid', 'quantity'))
-                        ->values(array($orderId, $item['nid'], $item['quantity']))
-                        ->execute();
+                $nodes = node_load_multiple(array_keys($items));
+
+                $query = db_insert('oat_order_items')->fields(array('oid', 'nid', 'quantity'));
+                foreach ($items as $nid => $item) {
+                    $query->values(array($orderId, $nid, $item['quantity']));
+                    $sum += (int)$this->getOrderItemCost($nodes[$nid], $item['quantity']);
                 }
+                $query->execute();
             }
+
+            // Update order sum
+            db_update('oat_order')
+                ->fields(array('sum' => $sum))
+                ->condition('id', $orderId)
+                ->execute();
         }
+    }
+
+    /**
+     * Return cost of order item
+     * */
+    public static function getOrderItemCost($node, $quantity) {
+        // TODO: Apply discounters
+        return (int)$node->field_price['und'][0]['value'] * $quantity;
     }
 } 

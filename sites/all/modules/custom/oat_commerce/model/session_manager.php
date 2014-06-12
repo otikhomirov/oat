@@ -41,6 +41,10 @@ class SessionManager {
             $this->save($uid);
         }
 
+        if(user_is_logged_in()) {
+            $this->_isAnonymous = false;
+        }
+
         $query = db_select('oat_session', 'tbl')->fields('tbl');
         $query->condition('cookie_id', $this->_cookieManager->getCookie());
         $objects = $query->execute();
@@ -59,10 +63,10 @@ class SessionManager {
         $this->_cookieManager->removeCookie();
         $this->removeCurrentSession();
         // Remove saved address if user is anonymous
-        if($this->_isAnonymous) {
-            $addressManager = new AddressManager();
-            $addressManager->removeSessionAddress($this->getSessionId());
-        }
+//        if($this->_isAnonymous) {
+//            $addressManager = new AddressManager();
+//            $addressManager->removeSessionAddress($this->getSessionId());
+//        }
     }
 
     /*

@@ -52,7 +52,7 @@
 <?php if($is_in_stock) : ?>
     <div class="add-to-cart">
         <div class="product-quantity">
-            <input type="text" value="1" class="quantity" name="quantity">
+            <input type="text" value="1" class="product-quantity" name="product-quantity">
         </div>
         <div class="product-add-to-cart">
             <a href="" data-nid="<?=$node->nid?>">Добавить в корзину</a>

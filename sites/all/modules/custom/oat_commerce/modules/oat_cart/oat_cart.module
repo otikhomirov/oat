@@ -1,0 +1,154 @@
+<?php
+require_once (drupal_get_path('module', 'oat_commerce') . '/model/session_manager.php');
+require_once (drupal_get_path('module', 'oat_commerce') . '/model/order_manager.php');
+require_once (drupal_get_path('module', 'oat_commerce') . '/model/address_manager.php');
+
+/*
+ * Hook_menu
+ * */
+function oat_cart_menu() {
+    $items = array();
+    $items['cart/add'] = array(
+        'page callback' => 'oat_add_to_cart',
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+    );
+    $items['cart/remove'] = array(
+        'page callback' => 'oat_remove_from_cart',
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+    );
+    return $items;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function oat_cart_theme() {
+  return array(
+    'oat_cart_view_form' => array(
+      'render element' => 'form',
+      'template' => 'oat-cart-view-form',
+      'path' => drupal_get_path('module', 'oat_cart') . '/templates',
+      'file' => 'theme.inc',
+    ),
+  );
+}
+
+/*
+ * Create cart form
+ * */
+function oat_commerce_cart_form($form, &$form_state) {
+    $form = array();
+
+    $order_manager = new OrderManager();
+    $items = $order_manager->itemsInCart();
+
+    // if no items in cart
+    if(empty($items)) {
+        $form['empty_cart'] = array(
+            '#markup' => '<div class="settings-field">Корзина пуста.</div>',
+        );
+        return $form;
+    }
+
+    // Product nodes
+    $nodes = node_load_multiple(array_keys($items));
+
+    $html = '<table class="cart-items">
+                <thead>
+                    <tr>
+                        <td></td>
+                        <td>Наименование</td>
+                        <td>Количество</td>
+                        <td>Общая стоимость</td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>';
+
+    $count = 1;
+    $sum = 0;
+    foreach($items as $nid => $item) {
+        $item_cost = (int)$nodes[$nid]->field_price['und'][0]['value'] * $item['quantity'];
+        $sum += $item_cost;
+
+        $html .= '<tr class="cart-item" data-cost="'.$nodes[$nid]->field_price['und'][0]['value'].'" data-nid="'.$nid.'">';
+        $html .= '<td>'.$count.'</td>';
+        $html .= '<td>'.$nodes[$nid]->title.'</td>';
+        $html .= '<td><input type="text" class="product-quantity" name="product-quantity['.$nid.']" value="'.$item['quantity'].'"></td>';
+        $html .= '<td class="cart-item-cost">'.$item_cost.'</td>';
+        $html .= '<td><a href="" class="product-remove">Удалить</a></td>';
+        $html .= '</tr>';
+
+        $count++;
+    }
+
+    $html .=    '
+                </tbody>
+                <tfoot>
+                   <tr><td colspan="4">Итого к оплате: <span class="order-sum">'.$sum.'</span></td></tr>
+                </tfoot>
+             </table>';
+
+    $form['cart'] = array(
+        "#markup" => $html
+    );
+
+    // Submit
+    $form['actions']['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Оформить заказ'),
+    );
+
+    $form['#submit'][] = 'oat_commerce_cart_form_submit';
+
+    return $form;
+}
+
+/*
+ * Submit cart form
+ * */
+function oat_commerce_cart_form_submit($form, &$form_state) {
+    // Update items quantity
+    if(!empty($form_state['input']['product-quantity'])) {
+        $order_manager = new OrderManager();
+        foreach($form_state['input']['product-quantity'] as $nid => $quantity) {
+            $order_manager->changeQuantity($nid,  $quantity);
+        }
+    }
+    // Redirect to address page
+    if(user_is_logged_in()) {
+        drupal_goto(drupal_get_path_alias('node/'.SELECT_ADDRESS_PAGE_ID));
+    } else {
+        drupal_goto(drupal_get_path_alias('node/'.ADDRESS_PAGE_ID));
+    }
+}
+
+/**
+ * Ajax add to cart
+ * */
+function oat_add_to_cart() {
+    if(!empty($_POST['nid']) && !empty($_POST['quantity'])) {
+        $order_manager = new OrderManager();
+        $id = $order_manager->addToCart($_POST['nid'], $_POST['quantity']);
+        drupal_json_output(array('result' => $id));
+        drupal_exit();
+    }
+    drupal_json_output(array('result' => 0));
+    drupal_exit();
+}
+
+/**
+ * Ajax remove from cart
+ * */
+function oat_remove_from_cart() {
+    if(!empty($_POST['nid'])) {
+        $order_manager = new OrderManager();
+        $order_manager->removeFromCart($_POST['nid']);
+        drupal_json_output(array('result' => 1));
+        drupal_exit();
+    }
+    drupal_json_output(array('result' => 0));
+    drupal_exit();
+}

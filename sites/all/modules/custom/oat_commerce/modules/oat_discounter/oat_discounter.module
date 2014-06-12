@@ -1,0 +1,3 @@
+<?php
+require_once (drupal_get_path('module', 'oat_commerce') . '/model/discounter_manager.php');
+

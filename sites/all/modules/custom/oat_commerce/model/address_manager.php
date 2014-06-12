@@ -15,8 +15,8 @@ class AddressManager {
 
         if(!empty($uid) && !empty($addressData)) {
             $addressId = db_insert('oat_address')
-                ->fields(array('uid', 'sid', 'city', 'street', 'house', 'building', 'flat', 'phone'))
-                ->values(array($uid, $sid, $addressData['city'], $addressData['street'], $addressData['house'], $addressData['building'], $addressData['flat'], $addressData['phone']))
+                ->fields(array('uid', 'sid', 'city', 'street', 'house', 'building', 'flat', 'email', 'phone'))
+                ->values(array($uid, $sid, $addressData['city'], $addressData['street'], $addressData['house'], $addressData['building'], $addressData['flat'], $addressData['email'], $addressData['phone']))
                 ->execute();
         }
 

@@ -21,20 +21,6 @@ function oat_cart_menu() {
     return $items;
 }
 
-/**
- * Implements hook_theme().
- */
-function oat_cart_theme() {
-  return array(
-    'oat_cart_view_form' => array(
-      'render element' => 'form',
-      'template' => 'oat-cart-view-form',
-      'path' => drupal_get_path('module', 'oat_cart') . '/templates',
-      'file' => 'theme.inc',
-    ),
-  );
-}
-
 /*
  * Create cart form
  * */

@@ -95,7 +95,7 @@ jQuery(function($) {
         $('.address-field').each(function() {
             var last_value = $(this).data('val');
             if(last_value != $(this).find('input').val()) {
-                $('.address-changed').val(1);
+                $('.address-not-changed').val(0);
             }
         });
     });

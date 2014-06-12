@@ -1,0 +1,38 @@
+<?php
+require_once (drupal_get_path('module', 'oat_commerce') . '/model/session_manager.php');
+require_once (drupal_get_path('module', 'oat_commerce') . '/model/order_manager.php');
+require_once (drupal_get_path('module', 'oat_commerce') . '/model/address_manager.php');
+
+/*
+ * Hook_menu
+ * */
+function oat_admin_menu() {
+    $items = array();
+    $items['admin/commerce'] = array(
+        'title' => 'Commerce',
+        'page callback' => 'system_admin_menu_block_page',
+        'file' => 'system.admin.inc',
+        'file path' => drupal_get_path('module', 'system'),
+        'access callback' => 'oat_admin_access',
+        'access arguments' => array('oat administer'),
+    );
+
+    $items['admin/commerce/orders'] = array(
+        'title' => 'Orders',
+        'description' => "Show the list of all orders with filters",
+        'page callback' => 'drupal_get_form',
+        'access callback' => 'oat_admin_access',
+        'page arguments' => array('_admin_view_orders_form'),
+        'file' => 'inc/oat_admin.pages.inc',
+        'access arguments' => array('oat administer'),
+    );
+    return $items;
+}
+
+/**
+ * Check user permissions
+ * */
+function oat_admin_access() {
+    global $user;
+    return user_is_logged_in() && (in_array('administrator', array_values($user->roles)));
+}

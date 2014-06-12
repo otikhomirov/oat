@@ -183,18 +183,18 @@ function oat_commerce_select_address_form($form, &$form_state) {
  * Create address form
  * */
 function oat_commerce_address_form($form, &$form_state) {
+    global $user;
     $form = array();
-
     $address_info = array();
+
     if(user_is_logged_in() && !empty($_GET['adr'])) {
-        global $user;
         $address_manager = new AddressManager();
         $address_info = $address_manager->getUserAddress($user->uid, (int)$_GET['adr']);
         // Hidden value
-        $form['changed'] = array(
+        $form['not_changed'] = array(
             '#type' => 'hidden',
-            '#value' => 0,
-            '#attributes' => array('class' =>array('address-changed'))
+            '#value' => 1,
+            '#attributes' => array('class' =>array('address-not-changed'))
         );
         $form['address_id'] = array(
             '#type' => 'hidden',
@@ -209,11 +209,16 @@ function oat_commerce_address_form($form, &$form_state) {
         'building' => !empty($address_info['building']) ? $address_info['building'] : '',
         'flat' => !empty($address_info['flat']) ? $address_info['flat'] : '',
         'phone' => !empty($address_info['phone']) ? $address_info['phone'] : '',
+        'email' => !empty($address_info['email']) ? $address_info['email'] : '',
     );
+
+    if(empty($default_values['email']) && user_is_logged_in()) {
+        $default_values['email'] = $user->mail;
+    }
 
     // City
     $form['city'] = array(
-        '#prefix' => '<div class="address-field" data-val="'.$default_values['city'].'">',
+        '#prefix' => '<div class="form-field address-field" data-val="'.$default_values['city'].'">',
         '#suffix' => '</div>',
         '#type' => 'textfield',
         '#title' => t('Город'),
@@ -224,7 +229,7 @@ function oat_commerce_address_form($form, &$form_state) {
 
     // Street
     $form['street'] = array(
-        '#prefix' => '<div class="address-field" data-val="'.$default_values['street'].'">',
+        '#prefix' => '<div class="form-field address-field" data-val="'.$default_values['street'].'">',
         '#suffix' => '</div>',
         '#type' => 'textfield',
         '#title' => t('Улица'),
@@ -235,7 +240,7 @@ function oat_commerce_address_form($form, &$form_state) {
 
     // House
     $form['house'] = array(
-        '#prefix' => '<div class="address-field" data-val="'.$default_values['house'].'">',
+        '#prefix' => '<div class="form-field address-field" data-val="'.$default_values['house'].'">',
         '#suffix' => '</div>',
         '#type' => 'textfield',
         '#title' => t('Дом'),
@@ -246,7 +251,7 @@ function oat_commerce_address_form($form, &$form_state) {
 
     // Building
     $form['building'] = array(
-        '#prefix' => '<div class="address-field" data-val="'.$default_values['building'].'">',
+        '#prefix' => '<div class="form-field address-field" data-val="'.$default_values['building'].'">',
         '#suffix' => '</div>',
         '#type' => 'textfield',
         '#title' => t('Корпус'),
@@ -257,7 +262,7 @@ function oat_commerce_address_form($form, &$form_state) {
 
     // Flat
     $form['flat'] = array(
-        '#prefix' => '<div class="address-field" data-val="'.$default_values['flat'].'">',
+        '#prefix' => '<div class="form-field address-field" data-val="'.$default_values['flat'].'">',
         '#suffix' => '</div>',
         '#type' => 'textfield',
         '#title' => t('Квартира'),
@@ -268,13 +273,31 @@ function oat_commerce_address_form($form, &$form_state) {
 
     // Phone
     $form['phone'] = array(
-        '#prefix' => '<div class="address-field" data-val="'.$default_values['phone'].'">',
+        '#prefix' => '<div class="form-field address-field" data-val="'.$default_values['phone'].'">',
         '#suffix' => '</div>',
         '#type' => 'textfield',
         '#title' => t('Телефон'),
         '#required' => TRUE,
         '#default_value' => $default_values['phone'],
         '#maxlength' => 20,
+    );
+
+    // Email
+    $form['email'] = array(
+        '#prefix' => '<div class="form-field" data-val="'.$default_values['email'].'">',
+        '#suffix' => '</div>',
+        '#type' => 'textfield',
+        '#title' => t('E-mail'),
+        '#required' => TRUE,
+        '#default_value' => $default_values['email'],
+        '#maxlength' => 20,
+        '#element_validate' => array('oat_commerce_email_element_validate'),
+    );
+
+    // Comment
+    $form['comment'] = array(
+        '#title' => t('Дополнительный комментарий'),
+        '#type' => 'textarea',
     );
 
     // Submit
@@ -300,7 +323,7 @@ function oat_commerce_address_form_submit($form, &$form_state) {
     $uid = (int)$user->uid;
     $aid = 0;
 
-    if(!empty($form_state['input']['changed']) || empty($uid)) {
+    if(empty($form_state['input']['not_changed']) || empty($uid)) {
         $aid = $address_manager->saveAddress($uid, $session_manager->getSessionId(), $form_state['values']);
     } else {
         $aid = $form_state['input']['address_id'];
@@ -308,7 +331,7 @@ function oat_commerce_address_form_submit($form, &$form_state) {
 
     if(!empty($aid)) {
         $order_manager = new OrderManager();
-        $order_manager->send($aid);
+        $order_manager->send($aid, $form_state['values']['comment']);
     } else {
         form_set_error('Address error', 'Can\'t send order. Not valid address.');
     }

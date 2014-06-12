@@ -3,6 +3,14 @@
  * Order manager
  */
 class OrderManager {
+    const PENDING = 1;
+    const APPROVED = 2;
+    const PACKING = 3;
+    const DELIVERED = 4;
+    const DELETED = 5;
+    const NOT_APPROVED = 6;
+    const NOT_DELIVERED = 7;
+
     private $_sessionManager;
 
     public function __construct() {
@@ -70,12 +78,12 @@ class OrderManager {
 
     /**
      * Send order, clear session
-     * @params
-     *  $aid - (int) AddressID
+     * @param $aid - (int) AddressID
+     * @param $comment - (text) Order comment
      * */
-    public function send($aid) {
+    public function send($aid, $comment = '') {
         if($this->_sessionManager->isSessionExists()) {
-            $this->save($aid);
+            $this->save($aid, $comment);
             $this->clearCart();
             $this->_sessionManager->close();
         } else {
@@ -96,7 +104,7 @@ class OrderManager {
     /*
      * Save order
      * */
-    private function save($aid) {
+    private function save($aid, $comment = '') {
         $items = $this->itemsInCart();
         if(!empty($items)) {
             global $user;
@@ -104,8 +112,8 @@ class OrderManager {
 
             // Save order
             $orderId = db_insert('oat_order')
-                ->fields(array('number', 'sum', 'uid', 'aid', 'status'))
-                ->values(array('ORD'.uniqid(), 0, $uid, $aid, 0))
+                ->fields(array('number', 'sum', 'comment', 'uid', 'aid', 'status'))
+                ->values(array('', 0, $comment, $uid, $aid, 1,))
                 ->execute();
 
             $sum = 0;
@@ -123,7 +131,7 @@ class OrderManager {
 
             // Update order sum
             db_update('oat_order')
-                ->fields(array('sum' => $sum))
+                ->fields(array('sum' => $sum, 'number' => 'ORD'.$orderId.date('Y')))
                 ->condition('id', $orderId)
                 ->execute();
         }
@@ -135,5 +143,45 @@ class OrderManager {
     public static function getOrderItemCost($node, $quantity) {
         // TODO: Apply discounters
         return (int)$node->field_price['und'][0]['value'] * $quantity;
+    }
+
+    /**
+     * Get all user orders
+     * @params
+     *  $uid - (int) User ID
+     * */
+    public function getUserOrders($uid) {
+        $items = array();
+        $query = db_select('oat_order', 'tbl')->fields('tbl');
+        $query->condition('uid', $uid);
+        $objects = $query->execute();
+        while ($record = $objects->fetchAssoc()) {
+            $items[] = $record;
+        }
+        return $items;
+    }
+
+    /**
+     * Remove order
+     * @params
+     *  $uid - (int) User ID
+     *  $oid - (int) Order ID
+     * */
+    public function deleteUserOrder($uid, $oid) {
+        db_update('oat_order')
+            ->fields(array('status' => self::DELETED, 'deleted' => date('Y-m-d H:i:s', strtotime('now')), 'updated' => date('Y-m-d H:i:s', strtotime('now'))))
+            ->condition('uid', $uid)
+            ->condition('id', $oid)
+            ->execute();
+    }
+
+    /**
+     * Update order status
+     * */
+    public function updateOrderStatus($oid, $status) {
+        db_update('oat_order')
+            ->fields(array('status' => $status, 'updated' => date('Y-m-d H:i:s', strtotime('now'))))
+            ->condition('id', $oid)
+            ->execute();
     }
 } 

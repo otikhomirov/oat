@@ -26,6 +26,16 @@ function oat_admin_menu() {
         'file' => 'inc/oat_admin.pages.inc',
         'access arguments' => array('oat administer'),
     );
+
+    $items['admin/commerce/orders/%/edit'] = array(
+        'title' => 'Edit Order',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('_admin_order_form', 3),
+        'access arguments' => array('oat administer'),
+        'access callback' => 'oat_admin_access',
+        'file' => 'inc/oat_admin.pages.inc',
+    );
+
     return $items;
 }
 
@@ -35,4 +45,16 @@ function oat_admin_menu() {
 function oat_admin_access() {
     global $user;
     return user_is_logged_in() && (in_array('administrator', array_values($user->roles)));
+}
+
+/**
+ * Implement hook_theme
+ * */
+function oat_admin_theme() {
+    return array(
+        'oat_admin_order_items_form_theme' => array(
+            'render element' => 'element',
+            'file' => 'inc/oat_admin.pages.inc'
+        ),
+    );
 }

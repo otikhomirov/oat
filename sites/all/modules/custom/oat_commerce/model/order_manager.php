@@ -6,10 +6,11 @@ class OrderManager {
     const PENDING = 1;
     const APPROVED = 2;
     const PACKING = 3;
-    const DELIVERED = 4;
-    const DELETED = 5;
-    const NOT_APPROVED = 6;
-    const NOT_DELIVERED = 7;
+    const DELIVERING = 4;
+    const DELIVERED = 5;
+    const DELETED = 6;
+    const NOT_APPROVED = 7;
+    const NOT_DELIVERED = 8;
 
     private $_sessionManager;
 
@@ -167,10 +168,9 @@ class OrderManager {
      *  $uid - (int) User ID
      *  $oid - (int) Order ID
      * */
-    public function deleteUserOrder($uid, $oid) {
+    public function deleteOrder($oid) {
         db_update('oat_order')
             ->fields(array('status' => self::DELETED, 'deleted' => date('Y-m-d H:i:s', strtotime('now')), 'updated' => date('Y-m-d H:i:s', strtotime('now'))))
-            ->condition('uid', $uid)
             ->condition('id', $oid)
             ->execute();
     }
@@ -183,5 +183,46 @@ class OrderManager {
             ->fields(array('status' => $status, 'updated' => date('Y-m-d H:i:s', strtotime('now'))))
             ->condition('id', $oid)
             ->execute();
+    }
+
+    /**
+     * Get order info
+     * @param $oid - (int) Order ID
+     * @return array()
+     * */
+    public function getOrderById($oid) {
+        $query = db_select('oat_order', 'tbl')->fields('tbl');
+        $query->condition('id', $oid);
+        $object = $query->execute();
+        return $object->fetchAssoc();
+    }
+
+    /**
+     * Get specific order items
+     * @param $oid - (int) Order ID
+     * @return array()
+     * */
+    function getOrderItems($oid) {
+        $items = array();
+        $query = db_select('oat_order_items', 'tbl')->fields('tbl');
+        $query->condition('oid', $oid);
+        $objects = $query->execute();
+        while ($record = $objects->fetchAssoc()) {
+           $items[$record['nid']] = $record;
+        }
+        return $items;
+    }
+
+    /**
+     * Get order address info
+     * @param $oid - (int) Order ID
+     * @return array()
+     * */
+    function getOrderAddress($oid) {
+        $query = db_select('oat_address', 'adr')->fields('adr');
+        $query->leftJoin('oat_order', 'ord', 'ord.aid = adr.id');
+        $query->condition('ord.id', $oid);
+        $object = $query->execute();
+        return $object->fetchAssoc();
     }
 } 

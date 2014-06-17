@@ -308,7 +308,7 @@ function _admin_order_form($form, $form_state, $oid = NULL) {
                     <div><b>Order Number: '.$order['number'].'</b></div>
                     <div>Status: <b>'.$current_status_text.'</b></div>
                     <div>Created: '.$order['created'].'</div>
-                    <div>Last update`: '.$order['updated'].'</div>
+                    <div>Last update: '.$order['updated'].'</div>
                 </div>
             ',
         );
@@ -325,7 +325,7 @@ function _admin_order_form($form, $form_state, $oid = NULL) {
                     <div>User: '.$user_link.'</div>
                     <div>Phone: '.$address['phone'].'</div>
                     <div>E-mail: '.$email.'</div>
-                    <div>Address: Город '.$address['city'].', ул. '.$address['street'].', д.'.$address['house'].', к.'.$address['building'].', кв.'.$address['flat'].',</div>
+                    <div>Address: Город '.$address['city'].', ул. '.$address['street'].', д.'.$address['house'].', к.'.$address['building'].', кв.'.$address['flat'].'</div>
                     <div>Comment:</div>
                     <div>'.$order['comment'].'</div>
                 </div>
@@ -358,13 +358,13 @@ function _admin_order_form($form, $form_state, $oid = NULL) {
             $available = !empty($nodes[$nid]->field_count['und'][0]['value']) ? (int)$nodes[$nid]->field_count['und'][0]['value'] > (int)$item['quantity'] : false;
             $form['items']['list'][$nid]['available'] = array(
                 '#type' => 'markup',
-                '#markup' => $available ? 'Available' : 'Unavailable',
+                '#markup' => $available ? 'Available' : 'Unavailable' . (!empty($nodes[$nid]->field_count['und'][0]['value']) ? ' (Only '.$nodes[$nid]->field_count['und'][0]['value'].' is available)' : ''),
             );
-            $form['items']['list'][$nid]['op'] = array(
-                '#type' => 'markup',
-                '#markup' => '<div><a href="" data-nid="'. $nid .'" data-oid="'. $oid .'" class="edit-row">' . t('Edit') . '</a></div>
-                              <div><a href="" data-nid="'. $nid .'" data-oid="'. $oid .'" class="remove-row">' . t('Remove') . '</a></div>',
-            );
+//            $form['items']['list'][$nid]['op'] = array(
+//                '#type' => 'markup',
+//                '#markup' => '<div><a href="" data-nid="'. $nid .'" data-oid="'. $oid .'" class="edit-row">' . t('Edit') . '</a></div>
+//                              <div><a href="" data-nid="'. $nid .'" data-oid="'. $oid .'" class="remove-row">' . t('Remove') . '</a></div>',
+//            );
         }
         $form['items']['cost'] = array(
             '#type' => 'markup',
@@ -423,6 +423,8 @@ function _admin_order_form_submit($form, $form_state) {
                 break;
             case 'delete':
                 $order_manager->deleteOrder($values['order_id']);
+                break;
+            case 'update_order_items':
                 break;
             default: break;
         }

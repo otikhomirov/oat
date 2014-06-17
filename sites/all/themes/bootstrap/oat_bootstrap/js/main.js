@@ -120,4 +120,10 @@ jQuery(function($) {
 
         $('.order-sum').text(sum);
     }
+
+    // See order details
+    $('.order-details').click(function(e) {
+        e.preventDefault();
+        $(this).parents('tr:first').next().slideToggle("slow");
+    });
 });

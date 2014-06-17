@@ -85,6 +85,7 @@ function oat_bootstrap_theme() {
  * Hook_preprocess_page
  * */
 function oat_bootstrap_preprocess_page(&$variables) {
+    global $user;
     if (function_exists("http_response_code")) {
         $response_code = http_response_code();
         /* Check page status */
@@ -107,6 +108,12 @@ function oat_bootstrap_preprocess_page(&$variables) {
     $address = base_path() . path_to_theme() . '/';
     global $base_root;
     $variables['theme_address'] = _oat_bootstrap_var('theme_address', $base_root . $address);
+
+    // My orders page
+    if (!empty($variables['node']) && $variables['node']->nid == MY_ORDERS_PAGE_ID) {
+        $order_manager = new OrderManager();
+        $variables['orders'] = $order_manager->getUserOrders($user->uid);
+    }
 }
 
 /*
@@ -114,7 +121,6 @@ function oat_bootstrap_preprocess_page(&$variables) {
  * */
 function oat_bootstrap_preprocess_node(&$variables) {
     $variables['theme_address'] = _oat_bootstrap_var('theme_address');
-
     $node = $variables['node'];
     switch ($node->type) {
         case 'page':
@@ -142,6 +148,7 @@ function oat_bootstrap_preprocess_node(&$variables) {
                 $variables['messages'] = theme('status_messages');
                 $form_type = SELECT_ADDRESS_PAGE_ID;
             }
+
             $variables['form_type'] = $form_type;
             break;
 
@@ -155,4 +162,7 @@ function oat_bootstrap_preprocess_node(&$variables) {
  */
 function oat_bootstrap_preprocess_user_profile(&$variables) {
     $variables['theme_address'] = _oat_bootstrap_var('theme_address');
+    $_form = drupal_get_form('oat_commerce_settings_form');
+    $variables['settings_form'] = drupal_render($_form);
+    $variables['messages'] = theme('status_messages');
 }

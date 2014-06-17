@@ -3,6 +3,7 @@
 define('CART_PAGE_ID', 1);
 define('ADDRESS_PAGE_ID', 2);
 define('SELECT_ADDRESS_PAGE_ID', 3);
+define('MY_ORDERS_PAGE_ID', 5);
 
 require_once (drupal_get_path('module', 'oat_commerce') . '/model/session_manager.php');
 require_once (drupal_get_path('module', 'oat_commerce') . '/model/order_manager.php');
@@ -49,7 +50,7 @@ function oat_commerce_form_alter(&$form, &$form_state, $form_id) {
             $form['name']['#description'] = t('');
             $form['pass']['#description'] = t('');
             $form['actions']['submit']['#value'] = t('Войти');
-            $form['name']['#element_validate'] = array('oat_commerce_email_element_validate');
+            $form['#validate'][] = 'oat_commerce_login_validate';
             break;
         case 'user_register_form': // User register form
             if (!path_is_admin(current_path())) {
@@ -93,8 +94,20 @@ function oat_commerce_form_alter(&$form, &$form_state, $form_id) {
  * */
 function oat_commerce_email_element_validate($element, &$form_state, $form) {
     if (!valid_email_address($element['#value'])) {
-        form_error($element, t('Введите корректный e-mail адрес.'));
+        form_error($element, t('Указан неверный E-mail адрес.'));
     }
+}
+
+/*
+ * Custom login validate
+ * */
+function oat_commerce_login_validate($form, &$form_state) {
+    if (!empty($form_state['values']['email']) && !valid_email_address($form_state['values']['email'])) {
+        form_set_error('name', 'Введите корректный e-mail адрес.');
+    } else if (!user_load_by_mail($form_state['values']['email'])) {
+        form_set_error('name', 'Пользователя с таким e-mail нет в системе.');
+    }
+
 }
 
 /**
@@ -224,7 +237,7 @@ function oat_commerce_address_form($form, &$form_state) {
         '#title' => t('Город'),
         '#required' => TRUE,
         '#default_value' => $default_values['city'],
-        '#maxlength' => 40,
+        '#maxlength' => 64,
     );
 
     // Street
@@ -235,7 +248,7 @@ function oat_commerce_address_form($form, &$form_state) {
         '#title' => t('Улица'),
         '#required' => TRUE,
         '#default_value' => $default_values['street'],
-        '#maxlength' => 40,
+        '#maxlength' => 128,
     );
 
     // House
@@ -268,7 +281,7 @@ function oat_commerce_address_form($form, &$form_state) {
         '#title' => t('Квартира'),
         '#required' => TRUE,
         '#default_value' => $default_values['flat'],
-        '#maxlength' => 10,
+        '#maxlength' => 4,
     );
 
     // Phone
@@ -290,7 +303,7 @@ function oat_commerce_address_form($form, &$form_state) {
         '#title' => t('E-mail'),
         '#required' => TRUE,
         '#default_value' => $default_values['email'],
-        '#maxlength' => 20,
+        '#maxlength' => 128,
         '#element_validate' => array('oat_commerce_email_element_validate'),
     );
 
@@ -335,5 +348,143 @@ function oat_commerce_address_form_submit($form, &$form_state) {
     } else {
         form_set_error('Address error', 'Can\'t send order. Not valid address.');
     }
+}
 
+/*
+ * Create settings form
+ * */
+function oat_commerce_settings_form($form, &$form_state) {
+    global $user;
+    $user_info = user_load($user->uid);
+
+    $form = array();
+
+    $form['#attributes'] = array('autocomplete' => array('off'));
+
+    $form['full_name'] = array(
+        '#prefix' => '<div class="settings-field">',
+        '#suffix' => '</div>',
+        '#type' => 'textfield',
+        '#title' => t('Имя'),
+        '#required' => TRUE,
+        '#default_value' => !empty($user_info->field_full_name['und'][0]['value']) ? $user_info->field_full_name['und'][0]['value'] : '',
+        '#maxlength' => 40,
+    );
+    $form['mail'] = array(
+        '#prefix' => '<div class="settings-field">',
+        '#suffix' => '</div>',
+    );
+
+    $form['mail']['email'] = array(
+        '#type' => 'textfield',
+        '#title' => t('E-mail'),
+        '#required' => TRUE,
+        '#default_value' => $user_info->mail,
+        '#size' => 30,
+        '#maxlength' => 128,
+        '#element_validate' => array('oat_commerce_email_element_validate'),
+    );
+
+    $form['change_pass'] = array(
+        '#prefix' => '<div class="settings-field"><label>Изменить пароль</label>',
+        '#suffix' => '</div>',
+    );
+
+    $form['change_pass']['current_pass'] = array(
+        '#type' => 'password',
+        '#size' => 30,
+        '#attributes' => array('placeholder' => 'Текущий пароль')
+    );
+    $form['change_pass']['pass'] = array(
+        '#type' => 'password_confirm',
+        '#size' => 25,
+        '#process' => array('form_process_password_confirm', 'oat_commerce_alter_password_confirm'),
+    );
+
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Сохранить'),
+    );
+
+    $form['#validate'][] = 'oat_commerce_settings_form_validate';
+    $form['#submit'][] = 'oat_commerce_settings_form_submit';
+
+
+    return $form;
+}
+
+/**
+ * Alter password and confirm password fields to remove title and insert placeholder.
+ */
+function oat_commerce_alter_password_confirm($element) {
+    $element['pass1']['#title_display'] = "invisible";
+    $element['pass1']['#attributes']['placeholder'] = t("Новый пароль");
+    $element['pass2']['#title_display'] = "invisible";
+    $element['pass2']['#attributes']['placeholder'] = t("Повторите новый пароль");
+    return $element;
+}
+
+/**
+ * Validate settings form
+ */
+function oat_commerce_settings_form_validate(&$form, &$form_state) {
+    global $user;
+    require_once('includes/password.inc');
+
+    if (!empty($form_state['values']['email'])) {
+        if (!valid_email_address($form_state['values']['email'])) {
+            form_set_error('email', 'Указан неверный E-mail адрес.');
+        } else if (($user->mail != $form_state['values']['email']) && user_load_by_mail($form_state['values']['email'])) {
+            form_set_error('email', 'Пользователь с таким паролем уже существует.');
+        }
+    }
+
+    $confirm_pass = $form_state['input']['pass']['pass2'];
+    if (!empty($form_state['values']['current_pass']) && !user_check_password($form_state['values']['current_pass'], $user) || (empty($form_state['values']['current_pass']) && (!empty($form_state['values']['pass']) || !empty($confirm_pass)))) {
+        form_set_error('current_pass', t('Не верный текущий пароль'));
+    } else if (!empty($form_state['values']['current_pass']) && !empty($form_state['values']['current_pass']) && (strlen($form_state['values']['pass']) < 7)) {
+        form_set_error('pass', ' Пароль должен иметь минимум 7 символов.');
+    } else if ($form_state['values']['pass'] != $confirm_pass) {
+        form_set_error('pass', 'Пароль не совпадает');
+    }
+}
+
+/**
+ * Save user settings
+ */
+function oat_commerce_settings_form_submit($form, &$form_state) {
+    global $user;
+    $user = user_load($user->uid);
+    $update = $messages = array();
+    $is_update = false;
+
+    if (!empty($form_state['values']['full_name']) && ($user->field_full_name['und'][0]['value'] != $form_state['values']['full_name'])) {
+        $update['field_full_name'] = array(
+            'und' => array(
+                0 => array(
+                    'value' => $form_state['values']['full_name']
+                ),
+        ));
+        $is_update = true;
+        $messages[] = 'Имя изменено.';
+    }
+
+    if (!empty($form_state['values']['email']) && ($user->mail != $form_state['values']['email'])) {
+        $update['mail'] = $form_state['values']['email'];
+        $is_update = true;
+        $messages[] = 'E-mail адрес изменен.';
+    }
+
+    if (!empty($form_state['values']['pass'])) {
+        $update['pass'] = $form_state['values']['pass'];
+        $is_update = true;
+        $messages[] = 'Пароль изменен.';
+    }
+
+    if ($is_update) {
+        foreach ($messages as $message) {
+            drupal_set_message($message);
+        }
+        user_save($user, $update);
+    }
 }

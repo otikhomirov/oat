@@ -155,6 +155,7 @@ class OrderManager {
         $items = array();
         $query = db_select('oat_order', 'tbl')->fields('tbl');
         $query->condition('uid', $uid);
+        $query->orderBy('created', 'DESC');
         $objects = $query->execute();
         while ($record = $objects->fetchAssoc()) {
             $items[] = $record;
